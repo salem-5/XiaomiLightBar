@@ -4,11 +4,13 @@
 *.user
 *.suo
 
-build/
+build*/
+cmake-build-*/
 out/
 obj/
 x64/
 bin/
+installer*/
 
 packages/
 

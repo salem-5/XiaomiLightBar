@@ -8,6 +8,13 @@
       "generator": "Visual Studio 17 2022",
       "architecture": "x64",
       "binaryDir": "${sourceDir}/build"
+    },
+    {
+      "name": "arm64",
+      "displayName": "ARM64 (Visual Studio 2022)",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "ARM64",
+      "binaryDir": "${sourceDir}/build-arm64"
     }
   ],
   "buildPresets": [
@@ -19,6 +26,11 @@
     {
       "name": "x64-release",
       "configurePreset": "x64",
+      "configuration": "Release"
+    },
+    {
+      "name": "arm64-release",
+      "configurePreset": "arm64",
       "configuration": "Release"
     }
   ]

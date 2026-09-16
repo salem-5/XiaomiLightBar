@@ -6,11 +6,19 @@ if(NOT WIN32)
   message(FATAL_ERROR "This project targets Windows only.")
 endif()
 if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-  message(FATAL_ERROR "Configure with -A x64.")
+  message(FATAL_ERROR "Configure with -A x64 or -A ARM64.")
 endif()
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(CMAKE_GENERATOR_PLATFORM STREQUAL "ARM64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "ARM64|arm64")
+  set(WASDK_ARCH "arm64")
+  set(WASDK_WIN_ARCH "win-arm64")
+else()
+  set(WASDK_ARCH "x64")
+  set(WASDK_WIN_ARCH "win-x64")
+endif()
 
 set(PACKAGES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/packages")
 
@@ -31,9 +39,12 @@ find_pkg(WASDK_INTERACTIVE "Microsoft.WindowsAppSDK.InteractiveExperiences.*")
 find_pkg(WASDK_DWRITE "Microsoft.WindowsAppSDK.DWrite.*")
 find_pkg(WEBVIEW2 "Microsoft.Web.WebView2.*")
 
-find_program(CPPWINRT_EXE cppwinrt
-  HINTS "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x64"
-  REQUIRED)
+file(GLOB _sdk_bin_dirs "C:/Program Files (x86)/Windows Kits/10/bin/*/x64")
+if(_sdk_bin_dirs)
+  list(SORT _sdk_bin_dirs)
+  list(GET _sdk_bin_dirs -1 _sdk_bin_dir)
+endif()
+find_program(CPPWINRT_EXE cppwinrt HINTS ${_sdk_bin_dir} REQUIRED)
 
 set(GEN_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
 set(GEN_STAMP "${GEN_DIR}/.cppwinrt.stamp")
@@ -109,8 +120,8 @@ if(MSVC)
 endif()
 
 target_link_libraries(XiaomiLightBar PRIVATE
-  "${WASDK_FOUNDATION}/lib/native/x64/Microsoft.WindowsAppRuntime.Bootstrap.lib"
-  "${WASDK_FOUNDATION}/lib/native/x64/Microsoft.WindowsAppRuntime.lib"
+  "${WASDK_FOUNDATION}/lib/native/${WASDK_ARCH}/Microsoft.WindowsAppRuntime.Bootstrap.lib"
+  "${WASDK_FOUNDATION}/lib/native/${WASDK_ARCH}/Microsoft.WindowsAppRuntime.lib"
   delayimp.lib
   WindowsApp.lib
   runtimeobject.lib
@@ -125,10 +136,10 @@ target_link_options(XiaomiLightBar PRIVATE
 
 add_custom_command(TARGET XiaomiLightBar POST_BUILD
   COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-          "${WASDK_FOUNDATION}/runtimes/win-x64/native/Microsoft.WindowsAppRuntime.Bootstrap.dll"
+          "${WASDK_FOUNDATION}/runtimes/${WASDK_WIN_ARCH}/native/Microsoft.WindowsAppRuntime.Bootstrap.dll"
           "$<TARGET_FILE_DIR:XiaomiLightBar>"
   COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-          "${WASDK_WINUI}/runtimes-framework/win-x64/native/Microsoft.UI.Xaml.Controls.pri"
+          "${WASDK_WINUI}/runtimes-framework/${WASDK_WIN_ARCH}/native/Microsoft.UI.Xaml.Controls.pri"
           "$<TARGET_FILE_DIR:XiaomiLightBar>/resources.pri"
   COMMAND "${CMAKE_COMMAND}" -E copy_if_different
           "${CMAKE_CURRENT_SOURCE_DIR}/assets/app.ico"
