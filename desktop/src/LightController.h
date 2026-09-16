@@ -26,6 +26,8 @@ public:
         if (on != on_) Toggle();
     }
 
+    void SyncState(bool on) { on_ = on; }
+
     bool IsOn() const { return on_; }
 
 private:

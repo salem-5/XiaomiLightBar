@@ -212,6 +212,10 @@ void MainWindow::ApplySettings() {
         serial_->SetPort(settings_->port);
     }
 
+    if (light_) {
+        light_->SyncState(settings_->lightOn);
+    }
+
     if (shell_) {
         if (settings_->hotkeyEnabled) {
             shell_->RegisterHotkey(settings_->hotkeyModifiers, settings_->hotkeyKey);

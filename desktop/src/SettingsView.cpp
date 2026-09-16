@@ -186,6 +186,19 @@ SettingsView::SettingsView(std::shared_ptr<Settings> settings, std::shared_ptr<S
 
     auto windowCard = MakeCard(L"Window", windowStack);
 
+    stateRadio_ = RadioButtons();
+    stateRadio_.Items().Append(box_value(L"On"));
+    stateRadio_.Items().Append(box_value(L"Off"));
+    stateRadio_.SelectedIndex(settings_->lightOn ? 0 : 1);
+
+    auto stateStack = StackPanel();
+    stateStack.Children().Append(stateRadio_);
+    stateStack.Children().Append(MakeDescription(
+        L"The light never reports its state, so the app tracks power by assumption. If the physical "
+        L"remote drifts it, set the real state here. This does not send anything to the bar."));
+
+    auto stateCard = MakeCard(L"Light state (sync)", stateStack);
+
     themeCombo_ = ComboBox();
     themeCombo_.MinWidth(200);
     for (auto const* label : { L"System", L"Light", L"Dark" }) {
@@ -207,6 +220,7 @@ SettingsView::SettingsView(std::shared_ptr<Settings> settings, std::shared_ptr<S
     content.Children().Append(portCard);
     content.Children().Append(hotkeyCard);
     content.Children().Append(windowCard);
+    content.Children().Append(stateCard);
     content.Children().Append(themeCard);
 
     root_ = ScrollViewer();
@@ -259,6 +273,13 @@ void SettingsView::Initialize() {
 
     sleepToggle_.Toggled([this](auto&&, auto&&) {
         settings_->sleepToggle = sleepToggle_.IsOn();
+        settings_->Save();
+        NotifyChanged();
+    });
+
+    stateRadio_.SelectionChanged([this](auto&&, auto&&) {
+        if (stateRadio_.SelectedIndex() < 0) return;
+        settings_->lightOn = stateRadio_.SelectedIndex() == 0;
         settings_->Save();
         NotifyChanged();
     });

@@ -50,6 +50,7 @@ private:
     winrt::Microsoft::UI::Xaml::Controls::ToggleSwitch minimizedToggle_{ nullptr };
     winrt::Microsoft::UI::Xaml::Controls::ToggleSwitch startupToggle_{ nullptr };
     winrt::Microsoft::UI::Xaml::Controls::ToggleSwitch sleepToggle_{ nullptr };
+    winrt::Microsoft::UI::Xaml::Controls::RadioButtons stateRadio_{ nullptr };
     winrt::Microsoft::UI::Xaml::Controls::ComboBox themeCombo_{ nullptr };
 };
 
