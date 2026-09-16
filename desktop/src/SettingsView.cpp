@@ -213,6 +213,20 @@ SettingsView::SettingsView(std::shared_ptr<Settings> settings, std::shared_ptr<S
 
     auto themeCard = MakeCard(L"Theme", themeStack);
 
+    auto author = TextBlock();
+    author.Text(L"Xiaomi Light Bar by salem");
+    author.FontSize(13);
+
+    auto githubLink = HyperlinkButton();
+    githubLink.Content(box_value(L"github.com/salem-5"));
+    githubLink.NavigateUri(winrt::Windows::Foundation::Uri(L"https://github.com/salem-5"));
+    githubLink.Padding({ 0, 4, 0, 0 });
+
+    auto creditsStack = StackPanel();
+    creditsStack.Children().Append(author);
+    creditsStack.Children().Append(githubLink);
+    auto creditsCard = MakeCard(L"Credits", creditsStack);
+
     auto content = StackPanel();
     content.Spacing(16);
     content.Margin({ 24, 20, 24, 24 });
@@ -222,6 +236,7 @@ SettingsView::SettingsView(std::shared_ptr<Settings> settings, std::shared_ptr<S
     content.Children().Append(windowCard);
     content.Children().Append(stateCard);
     content.Children().Append(themeCard);
+    content.Children().Append(creditsCard);
 
     root_ = ScrollViewer();
     root_.Content(content);
